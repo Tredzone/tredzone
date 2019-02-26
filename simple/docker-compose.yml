@@ -6,8 +6,7 @@ services:
       - db.env
     environment:
       - BUILDBOT_CONFIG_DIR=config
-      - _BUILDBOT_CONFIG_URL=https://github.com/buildbot/buildbot-docker-example-config/archive/master.tar.gz
-      - BUILDBOT_CONFIG_URL=file://master.tar.gz
+      - BUILDBOT_CONFIG_URL=https://github.com/Tredzone/tredzone/archive/ci.tar.gz
       - BUILDBOT_WORKER_PORT=9989
       - BUILDBOT_WEB_URL=http://localhost:8010/
       - BUILDBOT_WEB_PORT=tcp:port=8010
@@ -25,13 +24,19 @@ services:
       - 5432
 
   worker:
-    image: "buildbot/buildbot-worker:master"
+    image: "buildbot-worker-trz"
     environment:
       BUILDMASTER: buildbot
       BUILDMASTER_PORT: 9989
-      WORKERNAME: example-worker
+      WORKERNAME: test-worker
       WORKERPASS: pass
       WORKER_ENVIRONMENT_BLACKLIST: DOCKER_BUILDBOT* BUILDBOT_ENV_* BUILDBOT_1* WORKER_ENVIRONMENT_BLACKLIST
-
+    volumes:
+      - /home/loic/.ssh:/home/buildbot/.ssh:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - build-volume:/buildbot
     links:
       - buildbot
+
+volumes:
+  build-volume:
